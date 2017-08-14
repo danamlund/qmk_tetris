@@ -20,3 +20,5 @@ COMBO_ENABLE = no 			# Enable key combinations
 ifndef QUANTUM_DIR
 	include ../../../../Makefile
 endif
+
+SRC = tetris_text.c

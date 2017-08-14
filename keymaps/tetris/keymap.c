@@ -45,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * ,----------------------------------------------------------------.
    * |~` | F1|F2 |F3 |F4 |F5 |F6 |F7 |F8 |F9 |F10|F11|F12|Reset  |Prsc|
    * |----------------------------------------------------------------|
-   * |     |MbL|MsU|MbR|   |   |   |   |   |   |   |   |   |     |_LO |
+   * |     |MbL|MsU|MbR|   |Tet|   |   |   |   |   |   |   |     |_LO |
    * |----------------------------------------------------------------|
    * |      |MsL|MsD|MsR|   |_GA|   |   |   |   |   |   |        |Hme |
    * |----------------------------------------------------------------|
@@ -180,56 +180,19 @@ static uint8_t tetris_running = 0;
 static int tetris_keypress = 0;
 
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
-  static uint8_t mods_pressed;
-  static bool mod_flag;
-
   switch (id) {
-    case 0:
-		if (tetris_running) {
-				tetris_running = 0; // esc quits tetris (if its running
-				return; // only quit tetris, dont send grave/esc
-		}
-      
-      /* Handle the combined Grave/Esc key
-       */
-      mods_pressed = get_mods()&GRAVE_MODS; // Check to see what mods are pressed
-
-      if (record->event.pressed) {
-        /* The key is being pressed.
-         */
-        if (mods_pressed) {
-          mod_flag = true;
-          add_key(KC_GRV);
-          send_keyboard_report();
-        } else {
-          add_key(KC_ESC);
-          send_keyboard_report();
-        }
-      } else {
-        /* The key is being released.
-         */
-        if (mod_flag) {
-          mod_flag = false;
-          del_key(KC_GRV);
-          send_keyboard_report();
-        } else {
-          del_key(KC_ESC);
-          send_keyboard_report();
-        }
-      }
-      break;
   case 1:
     // Fn + t starts a new tetris game
     tetris_running = 1;
     timer = 0;
     tetris_keypress = 0;
+    break;
   }
 }
 
 /*
  * Set up tetris
  */
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
     key_presses++;
@@ -242,6 +205,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case KC_LEFT: tetris_keypress = 2; break;
     case KC_DOWN: tetris_keypress = 3; break;
     case KC_RIGHT: tetris_keypress = 4; break;
+    case KC_ESC: tetris_running = 0; return false; // ESC stops tetris
     }
     if (tetris_keypress != 0) {
       return false;
