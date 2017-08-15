@@ -186,6 +186,8 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
     tetris_running = 1;
     timer = 0;
     tetris_keypress = 0;
+    // set randomness using number of keys pressed
+    tetris_start(tetris_key_presses);
     break;
   }
 }
