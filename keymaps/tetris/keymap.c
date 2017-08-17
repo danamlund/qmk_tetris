@@ -173,9 +173,8 @@ const uint16_t PROGMEM fn_actions[] = {
   [1] = ACTION_FUNCTION(1)
 };
 
-static uint8_t key_presses = 0;
-static uint16_t timer = 0;
-
+static uint8_t tetris_key_presses = 0;
+static uint16_t tetris_timer = 0;
 static uint8_t tetris_running = 0;
 static int tetris_keypress = 0;
 
@@ -184,7 +183,7 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   case 1:
     // Fn + t starts a new tetris game
     tetris_running = 1;
-    timer = 0;
+    tetris_timer = 0;
     tetris_keypress = 0;
     // set randomness using number of keys pressed
     tetris_start(tetris_key_presses);
@@ -197,7 +196,7 @@ void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
  */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (record->event.pressed) {
-    key_presses++;
+    tetris_key_presses++;
   }
 
   if (tetris_running && record->event.pressed) {
@@ -225,14 +224,14 @@ void matrix_init_user(void) {
 // Runs constantly in the background, in a loop.
 void matrix_scan_user(void) {
   if (tetris_running) {
-    timer++;
-    if (timer > 1000) {
+    tetris_timer++;
+    if (tetris_timer > 1000) {
       // every 1000 times this is run is about 100 ms.
       if (!tetris_tick(100)) {
         // game over
         tetris_running = 0;
       }
-      timer = 0;
+      tetris_timer = 0;
     }
   }
 	uint8_t layer = biton32(layer_state);
@@ -270,13 +269,6 @@ void tetris_send_down(void) {
 }
 void tetris_send_right(void) {
   send_keycode(KC_RGHT);
-}
-
-void tetris_send_home(void) {
-  send_keycode(KC_HOME);
-}
-void tetris_send_end(void) {
-  send_keycode(KC_END);
 }
 
 void tetris_send_backspace(void) {
