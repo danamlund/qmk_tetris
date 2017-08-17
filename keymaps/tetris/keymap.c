@@ -181,12 +181,13 @@ static int tetris_keypress = 0;
 void action_function(keyrecord_t *record, uint8_t id, uint8_t opt) {
   switch (id) {
   case 1:
-    // Fn + t starts a new tetris game
-    tetris_running = 1;
-    tetris_timer = 0;
-    tetris_keypress = 0;
-    // set randomness using number of keys pressed
-    tetris_start(tetris_key_presses);
+    if (record->event.pressed) {
+        tetris_running = 1;
+        tetris_timer = 0;
+        tetris_keypress = 0;
+        // set randomness using total number of key presses
+        tetris_start(tetris_key_presses);
+    }
     break;
   }
 }
